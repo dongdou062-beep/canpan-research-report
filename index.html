@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>参盘科技深度调研报告 — 母子公司全景分析</title>
+<style>
+  :root {
+    --parent: #1a56db;      /* 母公司色 */
+    --parent-bg: #eff6ff;
+    --parent-border: #93c5fd;
+    --sub: #7c3aed;         /* 子公司色 */
+    --sub-bg: #f5f3ff;
+    --sub-border: #c4b5fd;
+    --shared: #059669;      /* 共享/共同色 */
+    --shared-bg: #ecfdf5;
+    --shared-border: #6ee7b7;
+    --bg: #f8fafc;
+    --card-bg: #ffffff;
+    --text: #1e293b;
+    --text-secondary: #64748b;
+    --divider: #e2e8f0;
+    --radius: 10px;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    padding: 20px;
+  }
+  .container { max-width: 1100px; margin: 0 auto; }
+
+  /* 头部 */
+  .header {
+    background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+    color: white;
+    border-radius: var(--radius);
+    padding: 40px;
+    margin-bottom: 30px;
+  }
+  .header h1 { font-size: 2rem; margin-bottom: 10px; }
+  .header .meta { color: #94a3b8; font-size: 0.9rem; }
+  .header .badges { margin-top: 18px; display: flex; gap: 10px; flex-wrap: wrap; }
+  .header .badges span { 
+    padding: 5px 14px; border-radius: 20px; font-size: 0.82rem; font-weight: 600; 
+  }
+
+  /* 图例 */
+  .legend {
+    display: flex; gap: 20px; margin-bottom: 24px; flex-wrap: wrap;
+    background: var(--card-bg); border-radius: var(--radius); padding: 14px 20px; border: 1px solid var(--divider);
+  }
+  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; }
+  .legend-dot { width: 14px; height: 14px; border-radius: 4px; flex-shrink: 0; }
+
+  /* 标签 */
+  .tag {
+    display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: 700;
+    letter-spacing: 0.5px; margin-right: 4px; vertical-align: middle;
+  }
+  .tag-parent { background: #bfdbfe; color: #1e40af; }
+  .tag-sub { background: #ddd6fe; color: #5b21b6; }
+  .tag-shared { background: #a7f3d0; color: #065f46; }
+
+  /* 卡片 */
+  .card {
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    border: 1px solid var(--divider);
+    margin-bottom: 24px;
+    overflow: hidden;
+  }
+  .card-header {
+    padding: 18px 24px;
+    font-size: 1.15rem;
+    font-weight: 700;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .card-header.parent { background: var(--parent-bg); border-left: 4px solid var(--parent); }
+  .card-header.sub { background: var(--sub-bg); border-left: 4px solid var(--sub); }
+  .card-header.shared { background: var(--shared-bg); border-left: 4px solid var(--shared); }
+  .card-header.neutral { border-left: 4px solid #64748b; }
+  .card-body { padding: 20px 24px; }
+
+  /* 双栏对比 */
+  .compare { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .compare-col {
+    border: 2px solid; border-radius: var(--radius); padding: 16px; font-size: 0.9rem;
+  }
+  .compare-col.parent { border-color: var(--parent-border); background: var(--parent-bg); }
+  .compare-col.sub { border-color: var(--sub-border); background: var(--sub-bg); }
+  .compare-col h4 { font-size: 1rem; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+
+  /* 表格 */
+  table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+  th, td { padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--divider); }
+  th { background: #f1f5f9; font-weight: 600; color: var(--text-secondary); font-size: 0.8rem; text-transform: uppercase; }
+  tr.parent-row td:first-child { border-left: 3px solid var(--parent); }
+  tr.sub-row td:first-child { border-left: 3px solid var(--sub); }
+
+  /* 股权图 */
+  .equity-tree {
+    background: #f8fafc; border: 1px dashed var(--divider); border-radius: var(--radius);
+    padding: 24px; font-family: "JetBrains Mono", monospace; font-size: 0.82rem;
+    line-height: 2; white-space: pre; overflow-x: auto;
+  }
+
+  /* 时间线 */
+  .timeline { position: relative; padding-left: 28px; }
+  .timeline::before { content: ''; position: absolute; left: 10px; top: 0; bottom: 0; width: 2px; background: var(--divider); }
+  .tl-item { position: relative; margin-bottom: 16px; font-size: 0.9rem; }
+  .tl-item::before {
+    content: ''; position: absolute; left: -22px; top: 6px;
+    width: 10px; height: 10px; border-radius: 50%;
+  }
+  .tl-item.parent::before { background: var(--parent); }
+  .tl-item.sub::before { background: var(--sub); }
+  .tl-item.shared::before { background: var(--shared); }
+  .tl-date { font-weight: 700; color: var(--text-secondary); margin-right: 8px; }
+
+  /* 其他 */
+  h2 { font-size: 1.4rem; margin: 36px 0 16px; padding-bottom: 8px; border-bottom: 2px solid var(--divider); }
+  h3 { font-size: 1.15rem; margin: 24px 0 12px; }
+  .highlight { background: #fef3c7; padding: 2px 6px; border-radius: 3px; font-weight: 600; }
+  .note { background: #fffbeb; border: 1px solid #fde68a; border-radius: var(--radius); padding: 14px 18px; margin: 16px 0; font-size: 0.9rem; }
+  .note-title { font-weight: 700; color: #92400e; margin-bottom: 4px; }
+  .risk-card { display: flex; gap: 12px; align-items: flex-start; padding: 10px 0; border-bottom: 1px solid var(--divider); }
+  .risk-dot { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0; }
+  .risk-low { background: #dcfce7; }
+  .risk-mid { background: #fef3c7; }
+  .source-table td:first-child { font-weight: 600; white-space: nowrap; }
+  .stars { color: #f59e0b; }
+  @media (max-width: 768px) {
+    .compare { grid-template-columns: 1fr; }
+    .header { padding: 24px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+<!-- ========== HEADER ========== -->
+<div class="header">
+  <h1>🔍 参盘科技深度调研报告</h1>
+  <p class="meta">调研日期：2026-07-31 &nbsp;|&nbsp; 数据截止：工商数据 T+0，公开信息截止 2026年7月<br>
+  调研方法：企查查工商数据库 + 国家企业信用信息公示系统 + 公开信息挖掘 + 官网分析</p>
+  <div class="badges">
+    <span style="background:#bfdbfe;color:#1e40af;">🟦 母公司：四川参盘供应链科技</span>
+    <span style="background:#ddd6fe;color:#5b21b6;">🟪 子公司：成都参盘智能科技</span>
+    <span style="background:#a7f3d0;color:#065f46;">🟩 共享 / 集团层面信息</span>
+  </div>
+</div>
+
+<!-- ========== 图例 ========== -->
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot" style="background:var(--parent)"></div> 四川参盘供应链科技有限公司（母公司）</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--sub)"></div> 成都参盘智能科技有限公司（子公司）</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--shared)"></div> 共用 / 集团层面 / 品牌整体</div>
+</div>
+
+<!-- ========== 目录 ========== -->
+<nav class="card" style="margin-bottom:24px;">
+  <div class="card-body" style="padding:16px 24px;">
+    <strong>📑 目录</strong>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px 20px; margin-top:10px; font-size:0.9rem;">
+      <a href="#s1" style="color:var(--parent)">一、工商基础信息</a>
+      <a href="#s5" style="color:var(--text)">五、法律风险</a>
+      <a href="#s2" style="color:var(--parent)">二、股权结构与关联方</a>
+      <a href="#s6" style="color:var(--text)">六、知识产权</a>
+      <a href="#s3" style="color:var(--text)">三、经营状况</a>
+      <a href="#s7" style="color:var(--text)">七、行业口碑</a>
+      <a href="#s4" style="color:var(--text)">四、财务信用</a>
+      <a href="#s8" style="color:var(--text)">八、发展趋势</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ================================================================ -->
+<!-- 第一章：工商基础信息 -->
+<!-- ================================================================ -->
+<h2 id="s1">一、工商基础信息</h2>
+
+<!-- 母公司 -->
+<div class="card">
+  <div class="card-header parent"><span class="tag tag-parent">母公司</span> 四川参盘供应链科技有限公司</div>
+  <div class="card-body">
+    <table>
+      <tr class="parent-row"><td>统一社会信用代码</td><td>91510104MACYXTEWXM</td></tr>
+      <tr class="parent-row"><td>法定代表人</td><td><strong>张祥阳</strong></td></tr>
+      <tr class="parent-row"><td>成立日期</td><td>2023-09-27</td></tr>
+      <tr class="parent-row"><td>注册资本 / 实缴</td><td>1,000万元 / 600万元</td></tr>
+      <tr class="parent-row"><td>企业类型</td><td>其他有限责任公司</td></tr>
+      <tr class="parent-row"><td>登记状态</td><td>存续（在营、开业、在册）</td></tr>
+      <tr class="parent-row"><td>纳税人资质</td><td>一般纳税人</td></tr>
+      <tr class="parent-row"><td>人员规模 / 参保</td><td>50-99人 / <strong>97人</strong>（2025年报）</td></tr>
+      <tr class="parent-row"><td>注册地址</td><td>成都市锦江区三色路269号7栋1楼002号（火炬动力港A区）</td></tr>
+      <tr class="parent-row"><td>国标行业</td><td>其他技术推广服务（M7590）</td></tr>
+      <tr class="parent-row"><td>官方网站</td><td>canpan.net（备案名：参盘科技-数智化供应链端到端提效降本）</td></tr>
+      <tr class="parent-row"><td>企业邮箱</td><td>xierong@newhope.cn</td></tr>
+      <tr class="parent-row"><td>资质认定</td><td><span class="highlight">高新技术企业（2025）</span>、创新型中小企业</td></tr>
+    </table>
+    <div class="note" style="margin-top:14px;">
+      <div class="note-title">🔸 经营范围（母公司）</div>
+      技术服务与开发、软件开发与销售、物联网技术研发与设备制造、AI基础/应用软件、智能控制系统集成、智能机器人研发与销售、智能仓储装备、信息系统集成、供应链管理服务、广告、<strong>互联网信息服务、第二类增值电信业务、代理记账</strong>
+    </div>
+  </div>
+</div>
+
+<!-- 子公司 -->
+<div class="card">
+  <div class="card-header sub"><span class="tag tag-sub">子公司</span> 成都参盘智能科技有限公司</div>
+  <div class="card-body">
+    <table>
+      <tr class="sub-row"><td>统一社会信用代码</td><td>91510100MAERRN744H</td></tr>
+      <tr class="sub-row"><td>法定代表人</td><td><strong>董力成</strong></td></tr>
+      <tr class="sub-row"><td>成立日期</td><td>2025-08-08（<span class="highlight">成立仅约11个月</span>）</td></tr>
+      <tr class="sub-row"><td>注册资本 / 实缴</td><td>200万元 / 100万元</td></tr>
+      <tr class="sub-row"><td>企业类型</td><td>其他有限责任公司</td></tr>
+      <tr class="sub-row"><td>登记状态</td><td>存续（在营、开业、在册）</td></tr>
+      <tr class="sub-row"><td>纳税人资质</td><td>一般纳税人</td></tr>
+      <tr class="sub-row"><td>人员规模 / 参保</td><td>少于50人 / <strong>10人</strong>（2025年报）</td></tr>
+      <tr class="sub-row"><td>注册地址</td><td>天府新区兴隆街道集萃街619号<strong>天府海创园</strong>2-1栋10层1008号</td></tr>
+      <tr class="sub-row"><td>国标行业</td><td>信息处理和存储支持服务（I6550）</td></tr>
+      <tr class="sub-row"><td>官方网站</td><td>innosbot.com</td></tr>
+      <tr class="sub-row"><td>企业邮箱</td><td>xierong@newhope.cn（与母公司共用）</td></tr>
+    </table>
+    <div class="note" style="margin-top:14px;">
+      <div class="note-title">🔸 经营范围（子公司）</div>
+      智能机器人研发、物联网技术研发、软件开发、集成电路设计、AI基础资源与技术平台、智能控制系统集成、供应链管理、智能机器人/仓储装备/物料搬运装备销售、<strong>货物进出口、特种设备销售</strong>（与母公司互补：母公司偏软件/SaaS/整体方案，子公司偏硬件研发与销售）
+    </div>
+  </div>
+</div>
+
+<!-- 企业画像对比 -->
+<div class="compare">
+  <div class="compare-col parent">
+    <h4>🟦 母公司画像</h4>
+    <p>• 品牌：参盘科技 / SCP</p>
+    <p>• 定位：<strong>数智化供应链整体解决方案</strong></p>
+    <p>• 侧重：软件/SaaS / 系统集成 / 咨询</p>
+    <p>• 体量：97人，注册资本1000万</p>
+    <p>• 办公地：锦江区火炬动力港</p>
+    <p>• 资质：高新企业、创新型中小企业</p>
+  </div>
+  <div class="compare-col sub">
+    <h4>🟪 子公司画像</h4>
+    <p>• 品牌：参盘智能 / Innos</p>
+    <p>• 定位：<strong>智能机器人硬件研发与销售</strong></p>
+    <p>• 侧重：具身智能平台 / 机器人产品</p>
+    <p>• 体量：10人，注册资本200万</p>
+    <p>• 办公地：天府海创园（成都科学城核心区）</p>
+    <p>• 特点：初创期，承载"Innos平台"品牌</p>
+  </div>
+</div>
+
+<!-- ================================================================ -->
+<!-- 第二章：股权结构 -->
+<!-- ================================================================ -->
+<h2 id="s2">二、股权结构与关联方</h2>
+
+<div class="card">
+  <div class="card-header shared"><span class="tag tag-shared">股权穿透</span> 母子公司股权关系全景</div>
+  <div class="card-body">
+    <div class="equity-tree">
+┌──────────────────────────────────────────────────────┐
+│          <span style="color:#d97706;font-weight:700;">刘永好</span>（新希望集团创始人）                          │
+│          最终受益 26.3061%  |  表决权 60%               │
+└──────────────────────┬───────────────────────────────┘
+                       ▼
+┌──────────────────────────────────────────────────────┐
+│  <span style="color:var(--parent);">🟦 鲜生活冷链物流有限公司</span>                           │
+│     持股 <strong>60%</strong>（实缴600万）                              │
+│     世界500强新希望集团旗下，年产值超100亿，独角兽       │
+└──────────┬──────────────────────┬────────────────────┘
+           │                      │
+           ▼                      ▼
+┌──────────────────────┐  ┌──────────────────────────┐
+│ <span style="color:var(--parent);">🟦 四川参盘供应链科技</span> │  │ 宁波参之望（20%）        │
+│   <strong>【母公司】</strong>         │  │ 席刚/黄博/刘昌盛/张祥阳   │
+│   注册资本 1000万       │  │ 四川耕谷（各4%）         │
+│   实缴 600万            │  │                          │
+│   <span class="highlight">高新技术企业(2025)</span>  │  │                          │
+└──────────┬───────────┘  └──────────────────────────┘
+           │ 持股 <strong>60%</strong>（认缴120万/实缴100万）
+           ▼
+┌──────────────────────────────────────────────────────┐
+│ <span style="color:var(--sub);">🟪 成都参盘智能科技有限公司</span>                         │
+│   <strong>【子公司】</strong>  ·  注册资本 200万  ·  实缴 100万      │
+│   法人: 董力成  ·  参保: 10人                          │
+│                                                      │
+│   受益所有人:                                         │
+│     · 孙晓宇（鲜生活冷链总裁）44.9091%                 │
+│     · 刘永好 15.7823%（表决权 60%）                    │
+│                                                      │
+│   另一股东: 成都参之望（40%，认缴80万，未实缴）         │
+└──────────────────────────────────────────────────────┘
+    </div>
+
+    <h3>人员交叉任职</h3>
+    <table>
+      <tr><th>姓名</th><th><span class="tag tag-parent">母公司</span> 四川参盘供应链科技</th><th><span class="tag tag-sub">子公司</span> 成都参盘智能科技</th></tr>
+      <tr class="parent-row"><td><strong>张祥阳</strong></td><td>法定代表人 + 经理 + 股东(4%)</td><td>董事</td></tr>
+      <tr class="parent-row"><td><strong>张默怡</strong></td><td>监事</td><td>监事</td></tr>
+      <tr class="sub-row"><td><strong>董力成</strong></td><td>—</td><td>法定代表人 + 经理</td></tr>
+    </table>
+
+    <h3>股权历史变更（母公司）</h3>
+    <div class="timeline">
+      <div class="tl-item parent"><span class="tl-date">2023-09</span> 成立，鲜生活冷链 100% 持股（注册资本1000万）</div>
+      <div class="tl-item parent"><span class="tl-date">2023-11</span> 鲜生活降至60%，引入宁波参之望(20%) + 管理层个人股东(各4%)，完成股改</div>
+      <div class="tl-item parent"><span class="tl-date">2025-02</span> 孙晓宇退出 → 四川耕谷企业管理有限公司接替持股4%</div>
+      <div class="tl-item sub"><span class="tl-date">2025-08</span> <strong>成都参盘智能科技成立</strong>，母公司持股60%</div>
+    </div>
+
+    <div class="note">
+      <div class="note-title">⚠ 风险提示</div>
+      股权质押/冻结：<strong>未发现</strong>。宁波参之望、成都参之望、四川耕谷均未实缴，存在出资风险敞口约320万元。
+    </div>
+  </div>
+</div>
+
+<!-- ================================================================ -->
+<!-- 第三章：经营状况 -->
+<!-- ================================================================ -->
+<h2 id="s3">三、经营状况</h2>
+
+<div class="card">
+  <div class="card-header shared"><span class="tag tag-shared">品牌整体</span> 核心定位与商业模式</div>
+  <div class="card-body">
+    <p>参盘科技定位为<strong>"WAM（World-Action Model）驱动的工业级智能机器人公司"</strong>，由新希望集团与鲜生活冷链联合孵化。其核心差异化在于"不造传统机器人本体，而是提供机器人的智能核心——Innos具身智能平台"。</p>
+
+    <div class="compare" style="margin-top:16px;">
+      <div class="compare-col parent">
+        <h4>🟦 母公司业务</h4>
+        <p>✅ 数智化供应链整体解决方案</p>
+        <p>✅ 需求预测与配补调平衡</p>
+        <p>✅ 产销协同 / 智慧仓配 / IoT平台</p>
+        <p>✅ 智慧供应 / 智慧商城 / 智慧分销</p>
+        <p>✅ 软件/SaaS + 系统集成</p>
+        <p>✅ 代理记账（2025年12月新增）</p>
+        <p style="margin-top:8px;"><strong>收入模式</strong>：项目制+平台订阅</p>
+      </div>
+      <div class="compare-col sub">
+        <h4>🟪 子公司业务</h4>
+        <p>✅ Innos具身智能平台（大脑）</p>
+        <p>✅ 货箱装卸机器人 Boxer 1000</p>
+        <p>✅ 冷链搬运机器人 Aisu 1600</p>
+        <p>✅ 双臂分拣机器人 Jack Ⅰ</p>
+        <p>✅ 产线搬运 / 高位存取 / 平面堆叠</p>
+        <p>✅ 特种设备销售、货物进出口</p>
+        <p style="margin-top:8px;"><strong>收入模式</strong>：平台输出 + 自研直卖</p>
+      </div>
+    </div>
+
+    <h3>Innos具身智能平台 — 技术架构（子公司承载）</h3>
+    <table>
+      <tr><th style="width:120px;">技术单元</th><th>功能</th><th>关键指标</th></tr>
+      <tr class="sub-row"><td>Innos Brain</td><td>WAM端到端感知决策系统，支持自然语言交互</td><td>定位精度 &lt;2cm，动态避障 &lt;100ms</td></tr>
+      <tr class="sub-row"><td>Innos Hub</td><td>运动控制，适配轮式/履带/四足底盘及多品牌机械臂</td><td>跨硬件平台通用</td></tr>
+      <tr class="sub-row"><td>Innos Forge</td><td>世界模型仿真训练平台</td><td>80%功能虚拟环境完成，部署周期1-2周(vs 传统1-2月)</td></tr>
+    </table>
+
+    <h3>客户列表</h3>
+    <table>
+      <tr><th>客户</th><th>行业</th><th>服务主体</th><th>公开时间</th></tr>
+      <tr class="parent-row"><td>蜀道集团（四川省智慧交通科技）</td><td>国企/交通</td><td>母公司</td><td>2026-06（第一中标候选人）</td></tr>
+      <tr class="parent-row"><td>浪潮集团</td><td>科技</td><td>母公司</td><td>2025-07（中标）</td></tr>
+      <tr class="parent-row"><td>四川省云数科技有限公司</td><td>科技</td><td>母公司</td><td>2025-06</td></tr>
+      <tr class="parent-row"><td>炉霍县国有资产经营管理公司</td><td>政府/国资</td><td>母公司</td><td>2025-06</td></tr>
+      <tr class="parent-row"><td>内蒙古爱养牛科技有限公司</td><td>农牧</td><td>母公司</td><td>2024-08</td></tr>
+      <tr class="parent-row"><td>某全球头部咖啡连锁品牌</td><td>餐饮</td><td>母公司</td><td>官网案例</td></tr>
+      <tr class="parent-row"><td>某川内烘焙连锁品牌</td><td>餐饮</td><td>母公司</td><td>官网案例</td></tr>
+      <tr class="shared-row"><td>新希望乳业 / 绝味 / 跨国包材龙头</td><td>食品/包装</td><td>品牌整体</td><td>媒体报道</td></tr>
+    </table>
+
+    <h3>核心团队</h3>
+    <table>
+      <tr><th>姓名</th><th>职务</th><th>所属公司</th><th>背景</th></tr>
+      <tr class="parent-row"><td>张祥阳</td><td>总经理 / 法人</td><td>母公司</td><td>曾任阿里云零售行业解决方案负责人，服务多家世界500强</td></tr>
+      <tr class="shared-row"><td>程振林</td><td>CTO</td><td>品牌整体</td><td>中科院博士、国家863计划课题组组长，13项发明专利</td></tr>
+      <tr class="sub-row"><td>董力成</td><td>法人 / 经理</td><td>子公司</td><td>—</td></tr>
+      <tr class="parent-row"><td>张默怡</td><td>监事</td><td>双公司兼任</td><td>—</td></tr>
+    </table>
+    <p style="font-size:0.85rem;color:var(--text-secondary);">研发团队约<strong>150+人</strong>（品牌整体），硕士以上超90%。招聘以技术类为主(81.3%)，5-10年经验要求占43.8%。</p>
+  </div>
+</div>
+
+<!-- ================================================================ -->
+<!-- 第四章：财务信用 -->
+<!-- ================================================================ -->
+<h2 id="s4">四、财务信用</h2>
+
+<div class="card">
+  <div class="card-header neutral">财务透明度与信用状况</div>
+  <div class="card-body">
+    <div class="compare">
+      <div class="compare-col parent">
+        <h4>🟦 母公司</h4>
+        <p>• 年报财务数据：<strong>全部选择不公示</strong></p>
+        <p>• 社保人数变化：0(2023)→108(2024)→97(2025)</p>
+        <p>• 五险均正常缴纳，无欠缴</p>
+        <p>• 经营异常：<strong>无</strong></p>
+        <p>• 行政处罚：<strong>无</strong></p>
+        <p>• 股权质押/冻结：<strong>无</strong></p>
+      </div>
+      <div class="compare-col sub">
+        <h4>🟪 子公司</h4>
+        <p>• 成立仅11个月，财务数据未形成</p>
+        <p>• 社保人数：10人（2025年报）</p>
+        <p>• 五险均正常缴纳</p>
+        <p>• 经营异常：<strong>无</strong></p>
+        <p>• 行政处罚：<strong>无</strong></p>
+        <p>• 历史专利信息：<strong>5条</strong></p>
+      </div>
+    </div>
+
+    <div class="note">
+      <div class="note-title">📌 母公司鲜生活冷链参考</div>
+      鲜生活冷链2024年11月完成<strong>B+轮近9亿元融资</strong>（中国冷链物流行业单轮最大），估值超100亿元，上榜《2024全球独角兽榜》，年产值超100亿元。但参盘科技自身未独立融资，财务依赖鲜生活生态支持。
+    </div>
+  </div>
+</div>
+
+<!-- ================================================================ -->
+<!-- 第五章：法律风险 -->
+<!-- ================================================================ -->
+<h2 id="s5">五、法律风险</h2>
+
+<div class="card">
+  <div class="card-header neutral">司法与行政处罚记录</div>
+  <div class="card-body">
+    <div class="compare">
+      <div class="compare-col parent">
+        <h4>🟦 母公司</h4>
+        <p>✅ 裁判文书：<strong>0条</strong></p>
+        <p>✅ 开庭公告：<strong>0条</strong></p>
+        <p>✅ 行政处罚：<strong>0条</strong></p>
+        <p>✅ 动产抵押：<strong>0条</strong></p>
+        <p>✅ 破产重整：<strong>无</strong></p>
+        <p>⚠ 天眼查关联风险：59条（主要来自鲜生活/新希望体系）</p>
+      </div>
+      <div class="compare-col sub">
+        <h4>🟪 子公司</h4>
+        <p>✅ 裁判文书：<strong>0条</strong></p>
+        <p>✅ 开庭公告：<strong>0条</strong></p>
+        <p>✅ 行政处罚：<strong>0条</strong></p>
+        <p>✅ 动产抵押：<strong>0条</strong></p>
+        <p>✅ 经营异常：<strong>0条</strong></p>
+        <p>✅ 疑似关系：8条（正常关联）</p>
+      </div>
+    </div>
+    <div class="note">
+      <div class="note-title">⚠ 风险提示</div>
+      两家公司法律面均干净，但运营历史短（母公司不足3年、子公司不足1年），长期合规记录有待积累。母公司2025年12月新增"代理记账"许可，需关注新业务的合规运营。
+    </div>
+  </div>
+</div>
+
+<!-- ================================================================ -->
+<!-- 第六章：知识产权 -->
+<!-- ================================================================ -->
+<h2 id="s6">六、知识产权</h2>
+
+<div class="card">
+  <div class="card-header neutral">知识产权对比</div>
+  <div class="card-body">
+    <div class="compare">
+      <div class="compare-col parent">
+        <h4>🟦 母公司</h4>
+        <p>🏷 商标：<strong>16条</strong></p>
+        <p>📜 专利：<strong>35条</strong></p>
+        <p>💻 软件著作权：<strong>26条</strong></p>
+        <p>🌐 网站ICP：canpan.net、scp-tech.com</p>
+        <p>🏅 高新技术企业（2025年认定）</p>
+        <p>🏅 创新型中小企业</p>
+      </div>
+      <div class="compare-col sub">
+        <h4>🟪 子公司</h4>
+        <p>🏷 商标：—</p>
+        <p>📜 专利：<strong>1条</strong>（已公布）</p>
+        <p>💻 软件著作权：<strong>2条</strong></p>
+        <p>🌐 网站ICP：innosbot.com</p>
+        <p>📌 历史专利：<strong>5条</strong></p>
+        <p>📌 由母公司提供技术和IP支撑</p>
+      </div>
+    </div>
+    <div class="note">
+      <div class="note-title">📌 品牌宣传中声明的资质（待官方数据库验证）</div>
+      CMMI认证、软件企业证书 — 企业自述材料中提及，但未在企查查/官方数据库中检索到直接证据。
+    </div>
+  </div>
+</div>
+
+<!-- ================================================================ -->
+<!-- 第七章：行业口碑 -->
+<!-- ================================================================ -->
+<h2 id="s7">七、行业口碑</h2>
+
+<div class="card">
+  <div class="card-header neutral">员工评价与媒体报道</div>
+  <div class="card-body">
+    <h3>招聘平台数据（母公司为主）</h3>
+    <p>• 技术类岗位占比 <strong>81.3%</strong>，本科要求93.8%</p>
+    <p>• 5-10年经验要求43.8%，3-5年37.5% → 偏资深团队</p>
+    <p>• 工作地点100%在成都</p>
+    <p style="color:var(--text-secondary);">⚠ 脉脉、看准网等员工评价平台需登录才能查看完整信息，本轮检索未获取到参盘科技的直接员工评价数据。建议通过以下方式补充：</p>
+    <p style="color:var(--text-secondary);">① 脉脉搜索"四川参盘供应链科技有限公司"或"成都参盘智能科技有限公司"</p>
+    <p style="color:var(--text-secondary);">② 看准网(kanzhun.com)搜索"参盘科技"</p>
+    <p style="color:var(--text-secondary);">③ Boss直聘/智联招聘的公司评价页</p>
+
+    <h3>行业媒体评价（品牌整体）</h3>
+    <table>
+      <tr><th>媒体/平台</th><th>核心观点</th><th>倾向</th></tr>
+      <tr><td>东方财富（2026-07）</td><td>AI智慧物流厂商盘点，参盘科技获★★★★★评分</td><td>正面</td></tr>
+      <tr><td>IT之家（2026）</td><td>与Tesla Optimus、Figure AI并列对比，WAM路线差异化明显</td><td>正面/行业观察</td></tr>
+      <tr><td>搜狐（2026）</td><td>WAM vs 传统AGV路线对比，参盘科技为WAM代表</td><td>正面</td></tr>
+      <tr><td>格隆汇（2025）</td><td>草根知本合伙人之夜：参盘科技进入"智能元年"</td><td>正面</td></tr>
+      <tr><td>懒熊消费（2026）</td><td>从"AI+"到"智能经济"，参盘科技冷链物流智能化案例</td><td>正面</td></tr>
+    </table>
+
+    <h3>社媒与公众号（品牌整体）</h3>
+    <table>
+      <tr><th>渠道</th><th>状态</th><th>备注</th></tr>
+      <tr><td>微信公众号</td><td><strong>已建立</strong></td><td>名称：参盘科技（scpcanpan.com/contact页面确认），搜狗微信搜索暂未索引到文章</td></tr>
+      <tr><td>微信视频号</td><td><strong>已建立</strong></td><td>名称：参盘科技</td></tr>
+      <tr><td>抖音</td><td><strong>已建立</strong></td><td>名称：参盘科技</td></tr>
+      <tr><td>联系电话</td><td>母公司 13981780300 / 子公司 028-60668366</td><td>—</td></tr>
+      <tr><td>品牌热线</td><td>400-188-1978 / 400-152-5656</td><td>品牌共用</td></tr>
+    </table>
+
+    <div class="note">
+      <div class="note-title">📌 公众号内容获取建议</div>
+      搜狗微信搜索(weixin.sogou.com)对"参盘科技"的搜索未返回直接相关的公众号文章（结果多为含"科技"/"参"/"盘"等关键字的不相关内容）。建议直接在微信App中搜索并关注公众号"参盘科技"获取一手内容。
+    </div>
+  </div>
+</div>
+
+<!-- ================================================================ -->
+<!-- 第八章：发展趋势 -->
+<!-- ================================================================ -->
+<h2 id="s8">八、发展趋势</h2>
+
+<div class="card">
+  <div class="card-header neutral">战略演进时间线</div>
+  <div class="card-body">
+    <div class="timeline">
+      <div class="tl-item parent"><span class="tl-date">2023-09</span> <span class="tag tag-parent">母公司</span> 公司成立，鲜生活100%持股 — 起步于冷链物流科技</div>
+      <div class="tl-item parent"><span class="tl-date">2023-11</span> <span class="tag tag-parent">母公司</span> 引入管理层持股，完成股权激励架构</div>
+      <div class="tl-item parent"><span class="tl-date">2025-01</span> <span class="tag tag-parent">母公司</span> <strong>战略转型</strong>：经营范围删除物流配送类，新增AI/智能机器人</div>
+      <div class="tl-item parent"><span class="tl-date">2025-02</span> <span class="tag tag-parent">母公司</span> 孙晓宇退出 → 四川耕谷接替</div>
+      <div class="tl-item parent"><span class="tl-date">2025-05</span> <span class="tag tag-parent">母公司</span> 新增物联网设备制造、智能控制系统集成 → 强化硬件能力</div>
+      <div class="tl-item sub"><span class="tl-date">2025-08</span> <span class="tag tag-sub">子公司</span> <strong>成都参盘智能科技成立</strong> — 机器人业务独立运营</div>
+      <div class="tl-item parent"><span class="tl-date">2025-12</span> <span class="tag tag-parent">母公司</span> 去掉"市场调查"，新增代理记账许可</div>
+      <div class="tl-item sub"><span class="tl-date">2025-12</span> <span class="tag tag-sub">子公司</span> 经营范围删除"第二类增值电信业务" → 聚焦硬件</div>
+      <div class="tl-item shared"><span class="tl-date">2026-03</span> <span class="tag tag-shared">品牌</span> Innos具身智能平台正式发布</div>
+      <div class="tl-item parent"><span class="tl-date">2026-06</span> <span class="tag tag-parent">母公司</span> 中标蜀道集团供应链数智化协同平台（第一中标候选人）</div>
+      <div class="tl-item sub"><span class="tl-date">2026-Q3</span> <span class="tag tag-sub">子公司</span> 货箱装卸机器人 Boxer 1000 计划进入POC阶段</div>
+    </div>
+
+    <h3>战略转型三大信号</h3>
+    <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-top:12px;">
+      <div style="padding:14px; background:var(--parent-bg); border-radius:8px; border-left:3px solid var(--parent);">
+        <strong>📊 母公司：软→软硬一体</strong><br>
+        <span style="font-size:0.85rem;">2023年纯软件/SaaS起步，2025年起大举投入智能机器人，经营范围新增物联网设备制造</span>
+      </div>
+      <div style="padding:14px; background:var(--sub-bg); border-radius:8px; border-left:3px solid var(--sub);">
+        <strong>🤖 子公司：物流→智能制造</strong><br>
+        <span style="font-size:0.85rem;">从冷链物流配送服务全面转向AI、机器人、物联网设备。入驻天府海创园靠近科研人才</span>
+      </div>
+      <div style="padding:14px; background:var(--shared-bg); border-radius:8px; border-left:3px solid var(--shared);">
+        <strong>🌐 品牌：内部→外部</strong><br>
+        <span style="font-size:0.85rem;">从服务新希望体系内客户，到中标蜀道集团等外部大型国企，品牌独立拓展市场</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================================================================ -->
+<!-- 综合风险评级 -->
+<!-- ================================================================ -->
+<h2>九、综合风险评级</h2>
+
+<div class="card">
+  <div class="card-header neutral">关键风险评估</div>
+  <div class="card-body">
+    <div class="risk-card"><div class="risk-dot risk-low">🟢</div><div><strong>工商合规</strong> — 低风险：无经营异常、无行政处罚、年报按时公示（双公司均适用）</div></div>
+    <div class="risk-card"><div class="risk-dot risk-low">🟢</div><div><strong>司法涉诉</strong> — 低风险：无涉诉记录（双公司均适用）</div></div>
+    <div class="risk-card"><div class="risk-dot risk-mid">🟡</div><div><strong>财务透明</strong> — 中风险：母公司财务数据全部不公示，子公司成立不到1年无数据</div></div>
+    <div class="risk-card"><div class="risk-dot risk-mid">🟡</div><div><strong>运营年限</strong> — 中风险：母公司不足3年，子公司不足1年</div></div>
+    <div class="risk-card"><div class="risk-dot risk-mid">🟡</div><div><strong>业务阶段</strong> — 中风险：机器人业务仍在POC阶段，收入贡献不确定。母公司软件业务已有中标记录</div></div>
+  </div>
+</div>
+
+<!-- ================================================================ -->
+<!-- 信息获取渠道与可信度评级 -->
+<!-- ================================================================ -->
+<h2>十、信息获取渠道与可信度评级</h2>
+
+<div class="card">
+  <div class="card-header neutral">各维度最佳信息渠道</div>
+  <div class="card-body">
+    <table class="source-table">
+      <tr><th>研究维度</th><th>首选渠道</th><th>可信度</th><th>辅助渠道</th></tr>
+      <tr><td>工商基础信息</td><td>国家企业信用信息公示系统</td><td><span class="stars">★★★★★</span></td><td>企查查/天眼查</td></tr>
+      <tr><td>股权结构 & 实控人</td><td>企查查（穿透计算）</td><td><span class="stars">★★★★☆</span></td><td>工商年报</td></tr>
+      <tr><td>经营状况</td><td>企业官网 + 招投标平台</td><td><span class="stars">★★★★☆</span></td><td>行业媒体/采访</td></tr>
+      <tr><td>财务信用</td><td>工商年报（有限）</td><td><span class="stars">★★★☆☆</span></td><td>母公司鲜生活冷链融资新闻</td></tr>
+      <tr><td>法律风险</td><td>企查查司法模块 / 裁判文书网</td><td><span class="stars">★★★★★</span></td><td>信用中国</td></tr>
+      <tr><td>知识产权</td><td>国家知识产权局</td><td><span class="stars">★★★★★</span></td><td>企查查聚合</td></tr>
+      <tr><td>行业口碑</td><td>多源交叉验证</td><td><span class="stars">★★★☆☆</span></td><td>招聘平台/脉脉/看准网</td></tr>
+      <tr><td>发展趋势</td><td>工商变更记录 + 招投标公示</td><td><span class="stars">★★★★★</span></td><td>企业官网/媒体</td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- ================================================================ -->
+<!-- 深度研究建议 -->
+<!-- ================================================================ -->
+<h2>十一、进一步深度研究建议</h2>
+
+<div class="card">
+  <div class="card-header neutral">可继续挖掘的维度</div>
+  <div class="card-body">
+    <table>
+      <tr><th style="width:30px;">#</th><th>研究方向</th><th>具体方法</th><th>预期收获</th></tr>
+      <tr>
+        <td>1</td>
+        <td><strong>员工口碑深挖</strong></td>
+        <td>脉脉搜索"四川参盘供应链科技"或"成都参盘智能科技"查看匿名评价；看准网搜索公司全称；Boss直聘/智联招聘公司评价页</td>
+        <td>真实员工对管理风格、加班文化、薪资水平的评价</td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td><strong>微信公众号内容分析</strong></td>
+        <td>微信App搜索关注"参盘科技"公众号，分析历史文章的内容方向、发布频率、产品动态</td>
+        <td>企业战略方向、产品迭代节奏、客户案例详情</td>
+      </tr>
+      <tr>
+        <td>3</td>
+        <td><strong>专利细节拆解</strong></td>
+        <td>国家知识产权局逐个检索35条专利，分析技术布局（导航/视觉/冷链/控制等方向占比）</td>
+        <td>核心技术壁垒评估、技术路线判断</td>
+      </tr>
+      <tr>
+        <td>4</td>
+        <td><strong>竞品对比分析</strong></td>
+        <td>对比海柔创新、极智嘉、快仓等仓储机器人公司；对比Tesla Optimus、Figure AI等具身智能公司</td>
+        <td>参盘科技的差异化竞争力与市场定位</td>
+      </tr>
+      <tr>
+        <td>5</td>
+        <td><strong>鲜生活冷链生态深挖</strong></td>
+        <td>调研鲜生活冷链的完整子公司矩阵、融资历史、上市计划</td>
+        <td>参盘科技在集团战略中的位置与资源依赖程度</td>
+      </tr>
+      <tr>
+        <td>6</td>
+        <td><strong>招投标全景扫描</strong></td>
+        <td>蜀道集采平台、中国招标投标公共服务平台、天府阳光采购服务平台等全量检索参盘科技的投标/中标记录</td>
+        <td>真实商业落地规模、客户行业分布、项目金额区间</td>
+      </tr>
+      <tr>
+        <td>7</td>
+        <td><strong>团队背景逐一核实</strong></td>
+        <td>LinkedIn/脉脉搜索张祥阳、程振林、董力成等核心人员的履历、前同事评价、学术成果</td>
+        <td>团队实力的独立验证</td>
+      </tr>
+      <tr>
+        <td>8</td>
+        <td><strong>宁波/成都参之望穿透</strong></td>
+        <td>企查查分别检索两个合伙企业的GP/LP构成，确认员工持股平台的实际受益人</td>
+        <td>管理层真实激励结构</td>
+      </tr>
+      <tr>
+        <td>9</td>
+        <td><strong>鲜生活冷链关联风险排查</strong></td>
+        <td>天眼查59条风险信息的逐条排查，区分集团传导与本企业直接风险</td>
+        <td>真实的合规风险敞口</td>
+      </tr>
+      <tr>
+        <td>10</td>
+        <td><strong>实地调研/客户访谈</strong></td>
+        <td>联系已公开的客户（蜀道集团、浪潮）了解项目交付情况；联系行业专家评估技术路线</td>
+        <td>一手交付质量与客户满意度数据</td>
+      </tr>
+    </table>
+  </div>
+</div>
+
+<!-- ================================================================ -->
+<!-- 脚注 -->
+<!-- ================================================================ -->
+<div style="text-align:center; padding:30px 0; color:var(--text-secondary); font-size:0.85rem; border-top:1px solid var(--divider); margin-top:30px;">
+  <p><strong>报告编制</strong>：WorkBuddy 智能设计助手 / 研究主编 顾全之</p>
+  <p><strong>数据来源</strong>：企查查工商数据库、国家企业信用信息公示系统、天眼查、公开新闻报道、企业官网(canpan.net / innosbot.com)</p>
+  <p><strong>声明</strong>：本报告不构成投资建议，信息以官方登记为准。员工评价、公众号内容等维度因平台登录限制未能获取完整数据，建议补充调研。</p>
+</div>
+
+</div>
+</body>
+</html>
