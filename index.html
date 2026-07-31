@@ -135,8 +135,47 @@
   .toc-link { color: var(--parent); text-decoration: none; font-weight: 600; }
   .toc-link:hover { text-decoration: underline; color: #0e3aa8; }
   @media (max-width: 768px) {
-    .compare { grid-template-columns: 1fr; }
-    .header { padding: 24px; }
+    html { -webkit-text-size-adjust: 100%; }
+    body { padding: 10px; line-height: 1.65; }
+
+    /* 头部 */
+    .header { padding: 20px 18px; margin-bottom: 18px; }
+    .header h1 { font-size: 1.45rem; line-height: 1.4; }
+    .header .meta { font-size: 0.78rem; line-height: 1.6; }
+    .header .badges span { font-size: 0.72rem; padding: 4px 10px; }
+
+    /* 图例 */
+    .legend { gap: 8px 14px; padding: 10px 14px; margin-bottom: 16px; }
+
+    /* 卡片 */
+    .card { margin-bottom: 16px; }
+    .card-header { padding: 13px 14px; font-size: 1rem; gap: 8px; flex-wrap: wrap; }
+    .card-body { padding: 14px; }
+    .compare { gap: 12px; }
+    .compare-col { padding: 12px; font-size: 0.85rem; }
+
+    /* 表格：窄屏不挤压，超宽时横向滚动 */
+    table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    th, td { padding: 8px 10px; font-size: 0.82rem; }
+
+    /* 股权图：缩小字号 + 横向滚动 */
+    .equity-tree { font-size: 0.66rem; padding: 14px 10px; line-height: 1.9; }
+
+    /* 时间线 */
+    .timeline { padding-left: 22px; }
+    .tl-item { font-size: 0.85rem; margin-bottom: 12px; }
+
+    /* 标题与说明 */
+    h2 { font-size: 1.18rem; margin: 26px 0 12px; }
+    h3 { font-size: 1.02rem; margin: 18px 0 10px; }
+    .note { padding: 12px 14px; font-size: 0.85rem; }
+    .risk-dot { width: 32px; height: 32px; font-size: 1.05rem; }
+
+    /* 战略转型三大信号：单列堆叠 */
+    .signals-grid { grid-template-columns: 1fr !important; gap: 12px !important; }
+
+    /* 目录 */
+    .toc-link { font-size: 0.88rem; }
   }
 </style>
 </head>
@@ -578,7 +617,7 @@
     </div>
 
     <h3>战略转型三大信号</h3>
-    <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-top:12px;">
+    <div class="signals-grid" style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-top:12px;">
       <div style="padding:14px; background:var(--parent-bg); border-radius:8px; border-left:3px solid var(--parent);">
         <strong>📊 四川参盘供应链：软→软硬一体</strong><br>
         <span style="font-size:0.85rem;">2023年纯软件/SaaS起步，2025年起大举投入智能机器人，经营范围新增物联网设备制造</span>
