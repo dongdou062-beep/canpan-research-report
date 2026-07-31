@@ -132,6 +132,8 @@
   .risk-mid { background: #fef3c7; }
   .source-table td:first-child { font-weight: 600; white-space: nowrap; }
   .stars { color: #f59e0b; }
+  .toc-link { color: var(--parent); text-decoration: none; font-weight: 600; }
+  .toc-link:hover { text-decoration: underline; color: #0e3aa8; }
   @media (max-width: 768px) {
     .compare { grid-template-columns: 1fr; }
     .header { padding: 24px; }
@@ -165,14 +167,14 @@
   <div class="card-body" style="padding:16px 24px;">
     <strong>📑 目录</strong>
     <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px 20px; margin-top:10px; font-size:0.9rem;">
-      <a href="#s1" style="color:var(--parent)">一、工商基础信息</a>
-      <a href="#s5" style="color:var(--text)">五、法律风险</a>
-      <a href="#s2" style="color:var(--parent)">二、股权结构与关联方</a>
-      <a href="#s6" style="color:var(--text)">六、知识产权</a>
-      <a href="#s3" style="color:var(--text)">三、经营状况</a>
-      <a href="#s7" style="color:var(--text)">七、行业口碑</a>
-      <a href="#s4" style="color:var(--text)">四、财务信用</a>
-      <a href="#s8" style="color:var(--text)">八、发展趋势</a>
+      <a href="#s1" class="toc-link">一、工商基础信息</a>
+      <a href="#s2" class="toc-link">二、股权结构与关联方</a>
+      <a href="#s3" class="toc-link">三、经营状况</a>
+      <a href="#s4" class="toc-link">四、财务信用</a>
+      <a href="#s5" class="toc-link">五、法律风险</a>
+      <a href="#s6" class="toc-link">六、知识产权</a>
+      <a href="#s7" class="toc-link">七、行业口碑</a>
+      <a href="#s8" class="toc-link">八、发展趋势</a>
     </div>
   </div>
 </nav>
@@ -716,6 +718,26 @@
   <p><strong>数据来源</strong>：企查查工商数据库、国家企业信用信息公示系统、天眼查、公开新闻报道、企业官网(canpan.net / innosbot.com)</p>
   <p><strong>声明</strong>：本报告不构成投资建议，信息以官方登记为准。员工评价、公众号内容等维度因平台登录限制未能获取完整数据，建议补充调研。</p>
 </div>
+
+<script>
+// 目录锚点兜底：无论浏览器/预览环境是否支持原生 #hash 跳转，点击目录都平滑滚动到对应章节
+(function(){
+  var links = document.querySelectorAll('a.toc-link');
+  for (var i = 0; i < links.length; i++) {
+    (function(a){
+      a.addEventListener('click', function(e){
+        var id = a.getAttribute('href').slice(1);
+        var el = document.getElementById(id);
+        if (el) {
+          e.preventDefault();
+          el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          try { history.replaceState(null, '', '#' + id); } catch(err) {}
+        }
+      });
+    })(links[i]);
+  }
+})();
+</script>
 
 </div>
 </body>
